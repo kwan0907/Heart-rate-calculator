@@ -38,12 +38,24 @@
             width: 100%;
             max-width: 500px;
         }
+        /* Logo 區域樣式 */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 15px; /* 減少下方距離，讓整體更緊湊 */
+        }
+        .logo-img {
+            max-width: 120px; /* 限制 Logo 最大寬度 */
+            height: auto; /* 保持比例 */
+            display: inline-block;
+        }
+
         h2 {
             text-align: center;
             margin-top: 0;
             color: var(--text-main);
             border-bottom: 2px solid #eee;
             padding-bottom: 15px;
+            font-size: 22px; /* 稍微縮小字體以適應 Logo */
         }
         .input-group {
             margin-bottom: 20px;
@@ -135,6 +147,10 @@
 
 <div id="app">
     <div class="calculator-container">
+        <div class="logo-container">
+            <img src="logo.png" alt="fitworkhk Logo" class="logo-img">
+        </div>
+        
         <h2>fitworkhk 心率計算器</h2>
         
         <div class="input-group">
@@ -198,7 +214,7 @@
                 cardio: {
                     title: "提升心肺耐力",
                     recommendation: `要強化心肺，建議將訓練強度推高至「中高強度」區間（大約 ${Math.round(mhr.value * 0.75)} - ${Math.round(mhr.value * 0.85)} bpm）。這能有效增加心臟泵血能力和肺活量。`,
-                    improvement: "建議加入高低強度間歇訓練。例如透過 CardioStep (踏板) 或彈床等高強度功能性訓練，讓心跳在短時間內推升至中高強度，再進行短暫恢復，能極速提升整體心肺適能。"
+                    improvement: "建議加入高低強度間歇訓練。例如透過 CardioStep (踏板) 或彈床等高強度功能性訓練，讓心跳內推升至中高強度，再進行短暫恢復，能極速提升整體心肺適能。"
                 },
                 performance: {
                     title: "增強爆發力與運動表現",
