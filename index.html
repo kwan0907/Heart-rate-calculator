@@ -43,7 +43,7 @@
         #app {
             width: 100%;
             max-width: 500px;
-            padding-bottom: 100px;
+            padding-bottom: 110px;
         }
 
         header {
@@ -59,14 +59,14 @@
         .card {
             background: var(--card);
             margin: 15px;
-            padding: 20px;
+            padding: 22px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        h2 { font-size: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        h2 { font-size: 20px; margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
 
-        .input-group { margin-bottom: 20px; }
+        .input-group { margin-bottom: 18px; }
         label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
         
         .input-box {
@@ -84,11 +84,37 @@
             background: #F7F8FA;
             outline: none;
             font-weight: 600;
+            color: var(--text-main);
+            box-sizing: border-box;
+            -webkit-appearance: none;
         }
 
-        input:focus { border-color: var(--primary); background: #fff; }
+        input:focus, select:focus { border-color: var(--primary); background: #fff; }
 
         .unit { position: absolute; right: 15px; font-weight: 700; color: var(--text-sub); }
+
+        /* 性別切換按鈕 */
+        .gender-toggle {
+            display: flex;
+            background: #F7F8FA;
+            border: 2px solid #E4E6EB;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .gender-btn {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gender-btn.active {
+            background: var(--primary);
+            color: white;
+        }
 
         /* 心率區間樣式 */
         .zone-grid { display: grid; gap: 10px; margin-top: 15px; }
@@ -101,17 +127,35 @@
         .pro-section {
             background: #F8F9FA;
             border-left: 4px solid var(--primary);
-            padding: 15px;
+            padding: 18px;
             margin-top: 20px;
             border-radius: 0 12px 12px 0;
         }
-        .pro-section h4 { margin: 0 0 8px 0; font-size: 15px; color: var(--primary); }
-        .pro-section p { font-size: 14px; color: #444; line-height: 1.6; margin-bottom: 12px; }
+        .pro-section h4 { margin: 0 0 10px 0; font-size: 16px; color: var(--primary); }
+        .pro-section p { font-size: 14.5px; color: #333; line-height: 1.6; margin-bottom: 12px; }
         .pro-section p:last-child { margin-bottom: 0; }
+
+        /* 營養數據網格 */
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .nutri-box {
+            background: #fff;
+            border: 1px solid #E4E6EB;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .nutri-title { font-size: 12px; color: var(--text-sub); font-weight: 700; margin-bottom: 5px; }
+        .nutri-val { font-size: 16px; color: var(--primary); font-weight: 900; }
 
         /* BMI 儀表 */
         .bmi-display { text-align: center; margin: 15px 0; }
-        .bmi-num { font-size: 48px; font-weight: 900; color: var(--primary); line-height: 1; }
+        .bmi-num { font-size: 52px; font-weight: 900; color: var(--primary); line-height: 1; }
         
         .gauge-container {
             height: 12px;
@@ -133,23 +177,24 @@
         .tab-nav {
             position: fixed; bottom: 0; width: 100%; max-width: 500px;
             background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-            display: flex; border-top: 1px solid #ddd; padding: 10px 0 30px;
+            display: flex; border-top: 1px solid #ddd; padding: 12px 0 25px;
+            z-index: 100;
         }
-        .nav-item { flex: 1; text-align: center; color: var(--text-sub); cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-        .nav-item span { font-size: 11px; font-weight: 700; }
+        .nav-item { flex: 1; text-align: center; color: var(--text-sub); cursor: pointer; transition: all 0.2s;}
+        .nav-item.active { color: var(--primary); transform: translateY(-2px);}
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-item span { font-size: 12px; font-weight: 700; }
 
         .btn-copy {
             width: 100%; padding: 16px; background: var(--primary); color: white;
             border: none; border-radius: 12px; font-size: 16px; font-weight: 800;
-            margin-top: 20px; box-shadow: 0 4px 12px rgba(0,71,255,0.2);
+            margin-top: 20px; box-shadow: 0 4px 12px rgba(0,71,255,0.2); cursor: pointer;
         }
         .btn-copy:active { transform: scale(0.97); }
 
         .toast {
-            position: fixed; top: 20px; background: #333; color: white;
-            padding: 10px 20px; border-radius: 50px; font-size: 14px; z-index: 999;
+            position: fixed; top: 20px; background: #333; color: white; left: 50%; transform: translateX(-50%);
+            padding: 12px 24px; border-radius: 50px; font-size: 15px; font-weight: 700; z-index: 999; white-space: nowrap;
         }
 
         .fade-enter-active, .fade-leave-active { transition: all 0.3s ease; }
@@ -166,7 +211,7 @@
 
     <main v-if="activeTab === 'hr'">
         <div class="card">
-            <h2><i class="fa-solid fa-heart-pulse"></i> 專業心率分析</h2>
+            <h2><i class="fa-solid fa-heart-pulse" style="color: #EF4444;"></i> 專業心率分析</h2>
             <div class="input-group">
                 <label>年齡 (Age)</label>
                 <div class="input-box">
@@ -188,7 +233,7 @@
 
                     <div style="text-align: center; margin: 15px 0;">
                         <div style="font-size: 13px; color: var(--text-sub); font-weight: 700;">最大心跳率 (MHR)</div>
-                        <div style="font-size: 32px; font-weight: 900; color: var(--primary);">{{ mhr }} bpm</div>
+                        <div style="font-size: 36px; font-weight: 900; color: var(--primary);">{{ mhr }} bpm</div>
                     </div>
 
                     <div class="zone-grid">
@@ -219,7 +264,24 @@
 
     <main v-if="activeTab === 'bmi'">
         <div class="card">
-            <h2><i class="fa-solid fa-weight-scale"></i> BMI 體格指標</h2>
+            <h2><i class="fa-solid fa-weight-scale" style="color: #3B82F6;"></i> BMI 及代謝綜合評估</h2>
+            
+            <div class="input-group">
+                <label>性別 (Gender)</label>
+                <div class="gender-toggle">
+                    <div class="gender-btn" :class="{active: gender === 'M'}" @click="gender = 'M'">男性</div>
+                    <div class="gender-btn" :class="{active: gender === 'F'}" @click="gender = 'F'">女性</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>年齡 (Age) <span style="font-weight:400; font-size:11px;">*用於計算代謝率</span></label>
+                <div class="input-box">
+                    <input type="number" v-model="age" inputmode="numeric" placeholder="請輸入年齡">
+                    <span class="unit">歲</span>
+                </div>
+            </div>
+
             <div class="input-group">
                 <label>身高 (Height)</label>
                 <div class="input-box">
@@ -227,16 +289,17 @@
                     <span class="unit">cm</span>
                 </div>
             </div>
+            
             <div class="input-group">
                 <label>體重 (Weight)</label>
                 <div class="input-box">
-                    <input type="number" v-model="weight" inputmode="decimal" placeholder="例如: 70">
+                    <input type="number" v-model="weight" inputmode="decimal" placeholder="例如: 70.5">
                     <span class="unit">kg</span>
                 </div>
             </div>
 
             <transition name="fade">
-                <div v-if="bmi > 0">
+                <div v-if="bmi > 0 && age > 0">
                     <div class="bmi-display">
                         <div class="bmi-num">{{ bmi }}</div>
                         <div style="font-weight: 700; color: var(--text-sub);">你的 BMI 指數</div>
@@ -249,9 +312,36 @@
                     <div class="pro-section" :style="{'border-color': bmiColor}">
                         <h4 :style="{color: bmiColor}">評估結論：{{ bmiStatus }}</h4>
                         <p><strong>⚖️ 理想體重範圍：</strong><br>{{ idealWeightRange }}</p>
-                        <p><strong>💡 專家建議：</strong><br>{{ bmiAdvice }}</p>
                     </div>
-                    <button class="btn-copy" @click="copyBMIReport">複製 BMI 專業報告</button>
+
+                    <h4 style="margin-top: 25px; margin-bottom: 5px; font-size: 16px; color: var(--text-main);"><i class="fa-solid fa-fire"></i> 每日營養攝取建議</h4>
+                    <p style="font-size: 12px; color: var(--text-sub); margin-top: 0;">基於 Mifflin-St Jeor 公式及您的活動目標計算：</p>
+                    
+                    <div class="nutrition-grid">
+                        <div class="nutri-box">
+                            <div class="nutri-title">基礎代謝率 (BMR)</div>
+                            <div class="nutri-val">{{ bmr }} kcal</div>
+                        </div>
+                        <div class="nutri-box">
+                            <div class="nutri-title">目標熱量 (TDEE調整)</div>
+                            <div class="nutri-val">{{ targetCalories }} kcal</div>
+                        </div>
+                        <div class="nutri-box">
+                            <div class="nutri-title">每日蛋白質建議</div>
+                            <div class="nutri-val">{{ proteinRange }}</div>
+                        </div>
+                        <div class="nutri-box">
+                            <div class="nutri-title">每日水份攝取</div>
+                            <div class="nutri-val">{{ waterIntake }} 公升</div>
+                        </div>
+                    </div>
+
+                    <div class="pro-section" style="border-color: #10B981;">
+                        <h4 style="color: #10B981;"><i class="fa-solid fa-stethoscope"></i> 專家建議與行動方案</h4>
+                        <p style="white-space: pre-line; line-height: 1.7;">{{ bmiAdvice }}</p>
+                    </div>
+
+                    <button class="btn-copy" @click="copyBMIReport">複製完整綜合報告</button>
                 </div>
             </transition>
         </div>
@@ -262,7 +352,7 @@
             <i class="fa-solid fa-heart-pulse"></i><span>心率分析</span>
         </div>
         <div class="nav-item" :class="{active: activeTab === 'bmi'}" @click="activeTab = 'bmi'">
-            <i class="fa-solid fa-weight-scale"></i><span>BMI 評估</span>
+            <i class="fa-solid fa-clipboard-user"></i><span>綜合評估</span>
         </div>
     </nav>
 
@@ -279,8 +369,13 @@
             const activeTab = ref('hr');
             const toastMsg = ref('');
             
-            // 心率數據
+            // 全域共用變數
             const age = ref('');
+            const gender = ref('M');
+            const height = ref('');
+            const weight = ref('');
+
+            // ================= 心率模組 =================
             const hrGoal = ref('cardio');
             const mhr = computed(() => {
                 const a = parseInt(age.value) || 0;
@@ -311,54 +406,103 @@
                 return { ...data, recommendation: data.recommendation() };
             });
 
-            // BMI 數據
-            const height = ref('');
-            const weight = ref('');
+            // ================= 代謝與 BMI 模組 =================
             const bmi = computed(() => {
                 const h = parseFloat(height.value) / 100;
                 const w = parseFloat(weight.value);
                 return (h > 0 && w > 0) ? (w / (h * h)).toFixed(1) : 0;
             });
+            
+            // Mifflin-St Jeor 公式計算 BMR
+            const bmr = computed(() => {
+                const w = parseFloat(weight.value);
+                const h = parseFloat(height.value);
+                const a = parseInt(age.value);
+                if (!w || !h || !a) return 0;
+                
+                let base = (10 * w) + (6.25 * h) - (5 * a);
+                return gender.value === 'M' ? Math.round(base + 5) : Math.round(base - 161);
+            });
+
+            // 計算 TDEE 及目標熱量 (假設輕度活動 1.375，根據 BMI 設定熱量缺口或盈餘)
+            const targetCalories = computed(() => {
+                if (bmr.value === 0) return 0;
+                const tdee = bmr.value * 1.375;
+                if (bmi.value < 18.5) return Math.round(tdee + 300); // 熱量盈餘
+                if (bmi.value >= 24) return Math.round(tdee - 500); // 熱量缺口
+                return Math.round(tdee); // 維持
+            });
+
+            // 蛋白質計算 (1.2g - 1.6g 每公斤體重，針對有運動習慣人士)
+            const proteinRange = computed(() => {
+                const w = parseFloat(weight.value);
+                if (!w) return '0g';
+                return `${Math.round(w * 1.2)}g - ${Math.round(w * 1.6)}g`;
+            });
+
+            // 水份計算 (每公斤 35ml)
+            const waterIntake = computed(() => {
+                const w = parseFloat(weight.value);
+                return w ? (w * 35 / 1000).toFixed(1) : '0';
+            });
+
             const bmiPos = computed(() => Math.min(Math.max(((bmi.value - 15) / 20) * 100, 0), 100));
+            
+            // 亞洲標準 BMI
             const bmiStatus = computed(() => {
                 if (bmi.value < 18.5) return '體重過輕 (Underweight)';
-                if (bmi.value < 24) return '理想體重 (Normal)';
+                if (bmi.value < 24) return '標準體重 (Normal)';
                 if (bmi.value < 28) return '體重過重 (Overweight)';
                 return '肥胖 (Obese)';
             });
+            
             const bmiColor = computed(() => {
                 if (bmi.value < 18.5) return '#3B82F6';
                 if (bmi.value < 24) return '#10B981';
                 if (bmi.value < 28) return '#F59E0B';
                 return '#EF4444';
             });
+            
             const idealWeightRange = computed(() => {
                 const h = parseFloat(height.value) / 100;
                 return h > 0 ? `${(18.5 * h * h).toFixed(1)}kg - ${(23.9 * h * h).toFixed(1)}kg` : '--';
             });
+
             const bmiAdvice = computed(() => {
-                if (bmi.value < 18.5) return '建議增加優質蛋白質攝取，並進行適度阻力訓練以增加肌肉量。';
-                if (bmi.value < 24) return '非常出色！請維持目前的運動習慣與均衡飲食。';
-                if (bmi.value < 28) return '建議配合有氧訓練 (CardioStep) 與彈床訓練，增加熱量消耗，改善代謝。';
-                return '強烈建議開始系統化的體育訓練，並嚴格控制糖分攝取，以降低健康風險。';
+                if (bmi.value < 18.5) return `【生理現況】目前體重處於過輕水平，可能伴隨肌肉量不足及基礎代謝率 (BMR) 偏低。
+【介入方案】需要啟動「熱量盈餘 (Caloric Surplus)」計畫，每日目標熱量建議達到 ${targetCalories.value} kcal。飲食上需有系統地攝取優質碳水化合物與高純度蛋白質 (${proteinRange.value})；訓練方面，建議配合適度的心肺功能訓練，以促進肌肉合成並提升整體營養吸收能力。`;
+                
+                if (bmi.value < 24) return `【生理現況】體重落在標準健康區間，基礎健康風險較低，整體代謝功能良好。
+【介入方案】現階段目標應從「控制體重」升級為「優化身體組成 (Body Composition)」。建議維持每日約 ${targetCalories.value} kcal 的熱量平衡；訓練上可透過 CardioStep 或高強度功能性訓練來突破體能樽頸，進一步降低體脂率並提升肌肉線條的清晰度。`;
+                
+                if (bmi.value < 28) return `【生理現況】體重超出理想範圍，身體可能已開始累積多餘脂肪，並影響基礎代謝效率。
+【介入方案】需精準創造「熱量缺口 (Caloric Deficit)」，每日熱量攝取建議控制在 ${targetCalories.value} kcal。飲食上務必確保 ${proteinRange.value} 的蛋白質攝取以防肌肉流失。
+
+🚨 由於您的數值顯示可能有脂肪囤積風險，強烈建議預約【fitworkhk 教練進行一對一健康及體態分析】，為您量身定制安全、有效的科學減脂與功能性訓練計畫。`;
+                
+                return `【生理現況】指數處於肥胖警戒線，心血管及代謝負擔顯著提升，且下肢關節長期承受過大負荷。
+【介入方案】必須立即啟動全面的「體重管理系統」。每日熱量需嚴格控制在 ${targetCalories.value} kcal 內。運動初期應避免高衝擊關節動作，需由專業人士指導基礎功能性活動。
+
+🚨 您的健康狀況需要專業介入！強烈建議立即預約【fitworkhk 教練進行一對一健康及體態分析】，透過教練的系統化評估，為您建立一套結合營養重整與安全訓練的完整改善方案。`;
             });
 
             const showToast = (msg) => {
                 toastMsg.value = msg;
-                setTimeout(() => toastMsg.value = '', 2000);
+                setTimeout(() => toastMsg.value = '', 2500);
             };
 
             const copyHRReport = () => {
-                const report = `【fitworkhk 心率評估報告】\n年齡：${age.value} 歲\nMHR：${mhr.value} bpm\n\n[建議區間]\n低強度：${getBPM(0.5)}-${getBPM(0.6)}\n中低強度：${getBPM(0.6)}-${getBPM(0.75)}\n中高強度：${getBPM(0.75)}-${getBPM(0.85)}\n高強度：${getBPM(0.85)}-${mhr.value}\n\n[專業建議]\n${currentHRData.value.recommendation}\n\n[體能方案]\n${currentHRData.value.improvement}`;
+                const report = `【fitworkhk 心率評估報告】\n年齡：${age.value} 歲\n最大心跳率 (MHR)：${mhr.value} bpm\n\n[建議強度區間]\n• 低強度：${getBPM(0.5)}-${getBPM(0.6)} bpm\n• 中低強度：${getBPM(0.6)}-${getBPM(0.75)} bpm\n• 中高強度：${getBPM(0.75)}-${getBPM(0.85)} bpm\n• 高強度：${getBPM(0.85)}-${mhr.value} bpm\n\n[專業建議]\n${currentHRData.value.recommendation}\n\n[體能方案]\n${currentHRData.value.improvement}`;
                 navigator.clipboard.writeText(report).then(() => showToast('✅ 報告已複製'));
             };
 
             const copyBMIReport = () => {
-                const report = `【fitworkhk BMI 指標報告】\n身高：${height.value}cm\n體重：${weight.value}kg\nBMI：${bmi.value}\n結論：${bmiStatus.value}\n理想範圍：${idealWeightRange.value}\n\n[專家建議]\n${bmiAdvice.value}`;
-                navigator.clipboard.writeText(report).then(() => showToast('✅ 報告已複製'));
+                const genderText = gender.value === 'M' ? '男' : '女';
+                const report = `【fitworkhk 綜合評估及代謝報告】\n基本資料：${genderText} / ${age.value}歲 / ${height.value}cm / ${weight.value}kg\n\n[體格指標]\nBMI 指數：${bmi.value}\n評估結論：${bmiStatus.value}\n理想體重範圍：${idealWeightRange.value}\n\n[每日營養及代謝建議]\n基礎代謝率 (BMR)：${bmr.value} kcal\n目標攝取熱量：${targetCalories.value} kcal\n建議蛋白質攝取：${proteinRange.value}\n建議水份攝取：${waterIntake.value} 公升\n\n[專家建議與行動方案]\n${bmiAdvice.value}`;
+                navigator.clipboard.writeText(report).then(() => showToast('✅ 綜合報告已複製'));
             };
 
-            return { activeTab, age, hrGoal, mhr, getBPM, currentHRData, height, weight, bmi, bmiPos, bmiStatus, bmiColor, idealWeightRange, bmiAdvice, toastMsg, copyHRReport, copyBMIReport };
+            return { activeTab, age, gender, hrGoal, mhr, getBPM, currentHRData, height, weight, bmi, bmr, targetCalories, proteinRange, waterIntake, bmiPos, bmiStatus, bmiColor, idealWeightRange, bmiAdvice, toastMsg, copyHRReport, copyBMIReport };
         }
     }).mount('#app');
 </script>
