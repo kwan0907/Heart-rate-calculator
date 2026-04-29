@@ -6,11 +6,15 @@
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
     <link rel="icon" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
+    <link rel="manifest" href="manifest.json">
     
     <title>fitworkhk 心率計算器</title>
+    
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
     <style>
         :root {
             --bg-color: #f0f4f8;
@@ -21,13 +25,16 @@
             --primary-hover: #0056b3;
             --primary-active: #004085;
             --surface: #f8fafc;
+            --zone1: #28a745;
+            --zone2: #85c1e9;
+            --zone3: #f39c12;
+            --zone4: #dc3545;
         }
         
-        /* 隱藏未載入完的 Vue 元素，避免閃爍 */
         [v-cloak] { display: none; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'Microsoft JhengHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
@@ -36,165 +43,134 @@
             min-height: 100vh;
             margin: 0;
             padding: 15px;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased; /* 字體更平滑 */
+            -webkit-font-smoothing: antialiased;
         }
 
         .calculator-container {
             background-color: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            padding: 25px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 30px 20px;
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             margin-top: 10px;
         }
 
-        .logo-container {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .logo-img {
-            max-width: 110px;
-            height: auto;
-            display: inline-block;
-        }
+        .logo-container { text-align: center; margin-bottom: 12px; }
+        .logo-img { max-width: 120px; height: auto; }
 
         h2 {
             text-align: center;
             margin-top: 0;
             color: var(--text-main);
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             margin-bottom: 25px;
             letter-spacing: 0.5px;
         }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-main);
-            font-size: 14px;
-        }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
 
-        /* 優化輸入框 */
         input[type="number"], select {
             width: 100%;
-            padding: 14px 15px;
+            padding: 15px;
             font-size: 16px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
             box-sizing: border-box;
             background-color: var(--surface);
             transition: all 0.3s ease;
             color: var(--text-main);
-            -webkit-appearance: none; /* 移除 iOS 預設樣式 */
+            -webkit-appearance: none;
         }
 
         input[type="number"]:focus, select:focus {
             outline: none;
             border-color: var(--primary);
             background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.1);
         }
 
-        .mhr-display {
+        /* 最大心跳率顯示 */
+        .mhr-card {
             text-align: center;
-            background: linear-gradient(135deg, #f6f8fd 0%, #f1f5f9 100%);
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            padding: 25px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            color: white;
+            box-shadow: 0 6px 15px rgba(0,123,255,0.2);
         }
-        .mhr-display h3 {
-            margin: 0;
-            font-size: 32px;
-            color: var(--primary);
-            font-weight: 800;
-            line-height: 1.2;
-        }
-        .mhr-display p {
-            margin: 5px 0 0 0;
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .mhr-card h3 { margin: 0; font-size: 36px; font-weight: 800; }
+        .mhr-card p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
 
-        .report-section {
-            background-color: var(--surface);
-            border-left: 4px solid var(--primary);
-            padding: 18px;
-            margin-top: 20px;
-            border-radius: 0 12px 12px 0;
+        /* 專業強度區間表 */
+        .zones-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 25px;
         }
-        .report-section h4 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            color: var(--primary);
-            font-size: 15px;
-        }
-        .report-section p {
+        .zone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
             font-size: 14px;
-            margin-bottom: 16px;
-            color: #4a5568;
-            line-height: 1.7;
         }
-        .report-section p:last-child {
-            margin-bottom: 0;
-        }
+        .zone-val { font-size: 16px; }
 
-        /* 優化按鈕觸控體驗 */
+        /* 報告區域 */
+        .report-section {
+            background-color: #f8fafc;
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 16px 16px 0;
+            margin-top: 10px;
+        }
+        .report-section h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
+        .report-section p { font-size: 14px; margin-bottom: 15px; color: #4a5568; line-height: 1.7; }
+        .report-section p:last-child { margin-bottom: 0; }
+
+        /* 按鈕樣式 */
         .action-btn {
             display: block;
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 800;
             cursor: pointer;
             margin-top: 25px;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
             transition: all 0.2s ease;
-            touch-action: manipulation; /* 提升手機連按反應 */
+            touch-action: manipulation;
         }
         .action-btn:active {
             background-color: var(--primary-active);
-            transform: scale(0.98); /* 撳落去會有輕微縮小嘅真實手感 */
-            box-shadow: 0 2px 6px rgba(0,123,255,0.3);
+            transform: scale(0.97);
         }
 
         .toast {
             text-align: center;
-            background-color: #38a169;
+            background-color: #2d3748;
             color: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             font-size: 14px;
             margin-top: 15px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: 600;
         }
 
-        /* Vue 動畫設定 */
-        .slide-fade-enter-active {
-            transition: all 0.4s ease-out;
-        }
-        .slide-fade-leave-active {
-            transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
-        }
-        .slide-fade-enter-from,
-        .slide-fade-leave-to {
-            transform: translateY(15px);
-            opacity: 0;
-        }
+        /* 動畫 */
+        .fade-enter-active, .fade-leave-active { transition: all 0.4s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(20px); }
     </style>
 </head>
 <body>
@@ -208,50 +184,58 @@
         <h2>fitworkhk 心率計算器</h2>
         
         <div class="input-group">
-            <label for="age">請輸入您的年齡：</label>
-            <input type="number" id="age" v-model="age" min="10" max="100" placeholder="例如：30" inputmode="numeric" pattern="[0-9]*">
+            <label>請輸入您的年齡：</label>
+            <input type="number" v-model="age" min="10" max="100" placeholder="例如：30" inputmode="numeric" pattern="[0-9]*">
         </div>
 
-        <transition name="slide-fade">
-            <div class="input-group" v-if="age && age > 0">
-                <label for="goal">請選擇輸出選項 (主要訓練目標)：</label>
-                <select id="goal" v-model="selectedGoal">
-                    <option value="fatLoss">減脂與基礎塑形</option>
-                    <option value="cardio">提升心肺耐力</option>
-                    <option value="performance">增強爆發力與運動表現</option>
-                </select>
+        <transition name="fade">
+            <div v-if="age > 0">
+                <div class="input-group">
+                    <label>請選擇訓練目標：</label>
+                    <select v-model="selectedGoal">
+                        <option value="fatLoss">減脂與基礎塑形</option>
+                        <option value="cardio">提升心肺耐力</option>
+                        <option value="performance">增強爆發力與運動表現</option>
+                    </select>
+                </div>
+
+                <div class="mhr-card">
+                    <h3>{{ mhr }} bpm</h3>
+                    <p>最大心跳率 (MHR = 220 - 年齡)</p>
+                </div>
+
+                <div class="zones-grid">
+                    <div class="zone-item" :style="{backgroundColor: 'var(--zone1)'}">
+                        <span>低強度 (50-60%)</span>
+                        <span class="zone-val">{{ getBPM(0.5) }}-{{ getBPM(0.6) }} bpm</span>
+                    </div>
+                    <div class="zone-item" :style="{backgroundColor: 'var(--zone2)'}">
+                        <span>中低強度 (60-75%)</span>
+                        <span class="zone-val">{{ getBPM(0.6) }}-{{ getBPM(0.75) }} bpm</span>
+                    </div>
+                    <div class="zone-item" :style="{backgroundColor: 'var(--zone3)'}">
+                        <span>中高強度 (75-85%)</span>
+                        <span class="zone-val">{{ getBPM(0.75) }}-{{ getBPM(0.85) }} bpm</span>
+                    </div>
+                    <div class="zone-item" :style="{backgroundColor: 'var(--zone4)'}">
+                        <span>高強度 (85-100%)</span>
+                        <span class="zone-val">{{ getBPM(0.85) }}-{{ mhr }} bpm</span>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <h4>🎯 針對「{{ currentGoalData.title }}」的建議</h4>
+                    <p>{{ currentGoalData.recommendation }}</p>
+                    <h4>🚀 提升體能方案</h4>
+                    <p>{{ currentGoalData.improvement }}</p>
+                </div>
+
+                <button class="action-btn" @click="copyReport">複製專業評估報告</button>
             </div>
         </transition>
 
-        <transition name="slide-fade">
-            <div class="mhr-display" v-if="age && age > 0">
-                <h3>{{ mhr }} bpm</h3>
-                <p>最大心跳率 (Maximal Heart Rate)</p>
-            </div>
-        </transition>
-
-        <transition name="slide-fade">
-            <div class="report-section" v-if="age && age > 0">
-                <h4>📊 數據總結</h4>
-                <p>根據您輸入的 <strong>{{ age }} 歲</strong>，您的預估最大心跳率 (MHR) 為 <strong>{{ mhr }} bpm</strong>。這代表了您在極限運動下的理論最高心跳值。</p>
-
-                <h4>💡 原理解釋</h4>
-                <p>心跳率是反映運動強度的客觀指標。透過監測心跳，我們可以確保您的訓練停留在正確的「強度區間」，這能有效避免過度勞累，同時精準打擊您的訓練目標。</p>
-
-                <h4>🎯 訓練建議 ({{ currentGoalData.title }})</h4>
-                <p>{{ currentGoalData.recommendation }}</p>
-
-                <h4>🚀 提升體能具體方案</h4>
-                <p>{{ currentGoalData.improvement }}</p>
-            </div>
-        </transition>
-
-        <transition name="slide-fade">
-            <button class="action-btn" v-if="age && age > 0" @click="copyReport">複製完整報告</button>
-        </transition>
-
-        <transition name="slide-fade">
-            <div class="toast" v-if="showToast">✅ 報告已複製到剪貼簿！</div>
+        <transition name="fade">
+            <div class="toast" v-if="showToast">✅ 報告已成功複製！</div>
         </transition>
     </div>
 </div>
@@ -261,73 +245,63 @@
 
     createApp({
         setup() {
-            const age = ref(''); // 預設留空，等客自己打，體驗更好
+            const age = ref('');
             const selectedGoal = ref('cardio');
             const showToast = ref(false);
 
             const mhr = computed(() => {
-                const currentAge = parseInt(age.value) || 0;
-                if(currentAge === 0) return 0;
-                return 220 - currentAge;
+                const val = parseInt(age.value) || 0;
+                return val > 0 ? 220 - val : 0;
             });
+
+            const getBPM = (pct) => Math.round(mhr.value * pct);
 
             const goalsData = {
                 fatLoss: {
                     title: "減脂與基礎塑形",
-                    recommendation: `針對您的目標，建議將主要訓練心跳維持在「中低強度」區間（大約 ${Math.round(mhr.value * 0.6)} - ${Math.round(mhr.value * 0.75)} bpm）。這個區間能最高效地利用脂肪作為主要能量來源。`,
-                    improvement: "每週建議進行 3-4 次，每次 30-45 分鐘的穩定節奏運動。配合健康飲食，建立熱量缺口，效果會最明顯。"
+                    recommendation: `建議將心跳維持在「中低強度」區間 (${getBPM(0.6)}-${getBPM(0.75)} bpm)。此區間脂肪燃燒效率最高。`,
+                    improvement: "每週 3-4 次，每次 40 分鐘中低強度有氧。配合穩定心率運動效果最佳。"
                 },
                 cardio: {
                     title: "提升心肺耐力",
-                    recommendation: `要強化心肺，建議將訓練強度推高至「中高強度」區間（大約 ${Math.round(mhr.value * 0.75)} - ${Math.round(mhr.value * 0.85)} bpm）。這能有效增加心臟泵血能力和肺活量。`,
-                    improvement: "建議加入高低強度間歇訓練。例如透過 CardioStep (踏板) 或彈床等高強度功能性訓練，讓心跳推升至中高強度，再進行短暫恢復，能極速提升整體心肺適能。"
+                    recommendation: `建議維持在「中高強度」區間 (${getBPM(0.75)}-${getBPM(0.85)} bpm)。這能強化心肺功能及泵血能力。`,
+                    improvement: "推薦 CardioStep 或彈床訓練，讓心跳進入中高強度區間，極速提升耐力。"
                 },
                 performance: {
                     title: "增強爆發力與運動表現",
-                    recommendation: `為了突破體能極限，您需要短暫進入「高強度」區間（大約 ${Math.round(mhr.value * 0.85)} - ${mhr.value} bpm）。這有助於提升乳酸閾值及肌肉爆發力。`,
-                    improvement: "建議每週安排 1-2 次高強度間歇訓練 (HIIT) 或極限衝刺訓練。注意此強度對身體負荷較大，訓練後必須確保有充足的營養補充與休息恢復時間。"
+                    recommendation: `需進入「高強度」區間 (${getBPM(0.85)}-${mhr.value} bpm)。有助於提升乳酸閾值。`,
+                    improvement: "每週 1-2 次 HIIT 訓練，短時間推至極限心跳，注意休息恢復。"
                 }
             };
 
-            const currentGoalData = computed(() => {
-                return goalsData[selectedGoal.value];
-            });
+            const currentGoalData = computed(() => goalsData[selectedGoal.value]);
 
             const copyReport = () => {
-                const reportText = `
-【Fitworkhk 心跳率評估報告】
+                const report = `
+【Fitworkhk 心跳率專業評估】
 年齡：${age.value} 歲
 最大心跳率 (MHR)：${mhr.value} bpm
 
-[總結]
-根據您的年齡，您的預估最大心跳率為 ${mhr.value} bpm。
+[強度區間建議]
+- 低強度：${getBPM(0.5)}-${getBPM(0.6)} bpm
+- 中低強度：${getBPM(0.6)}-${getBPM(0.75)} bpm
+- 中高強度：${getBPM(0.75)}-${getBPM(0.85)} bpm
+- 高強度：${getBPM(0.85)}-${mhr.value} bpm
 
-[原理解釋]
-心跳率是反映運動強度的客觀指標。透過監測心跳，確保訓練停留在正確區間，能避免過勞並精準達成目標。
-
-[訓練建議 - ${currentGoalData.value.title}]
+[針對目標：${currentGoalData.value.title}]
 ${currentGoalData.value.recommendation}
 
-[提升體能具體方案]
+[提升體能建議]
 ${currentGoalData.value.improvement}
                 `.trim();
 
-                navigator.clipboard.writeText(reportText).then(() => {
+                navigator.clipboard.writeText(report).then(() => {
                     showToast.value = true;
-                    setTimeout(() => {
-                        showToast.value = false;
-                    }, 3000);
+                    setTimeout(() => showToast.value = false, 3000);
                 });
             };
 
-            return {
-                age,
-                mhr,
-                selectedGoal,
-                currentGoalData,
-                copyReport,
-                showToast
-            }
+            return { age, mhr, selectedGoal, getBPM, currentGoalData, copyReport, showToast };
         }
     }).mount('#app');
 </script>
