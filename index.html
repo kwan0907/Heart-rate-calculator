@@ -2,363 +2,202 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <link rel="icon" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
-
-    <title>fitworkhk Pro Assessment</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專業心跳率強度計算與分析系統</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <style>
         :root {
-            --primary: #0047FF;
-            --bg: #F0F2F5;
-            --card: #FFFFFF;
-            --text-main: #1C1E21;
-            --text-sub: #65676B;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --primary: #007bff;
+            --primary-hover: #0056b3;
+            --secondary: #6c757d;
             --zone1: #28a745;
-            --zone2: #3B82F6;
+            --zone2: #85c1e9;
             --zone3: #f39c12;
             --zone4: #dc3545;
+            --alert-bg: #fff3cd;
+            --alert-text: #856404;
         }
-
-        [v-cloak] { display: none; }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
         }
-
-        #app {
+        .calculator-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
             width: 100%;
-            max-width: 500px;
-            padding-bottom: 110px;
+            max-width: 550px;
         }
-
-        header {
-            background: var(--card);
-            padding: 25px 20px 15px;
+        h2 {
             text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .logo-img { max-height: 50px; margin-bottom: 10px; }
-        .brand-name { font-size: 14px; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
-
-        .card {
-            background: var(--card);
-            margin: 15px;
-            padding: 22px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        h2 { font-size: 20px; margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
-
-        .input-group { margin-bottom: 18px; }
-        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-sub); }
-        
-        .input-box {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid #E4E6EB;
-            border-radius: 12px;
-            background: #F7F8FA;
-            outline: none;
-            font-weight: 600;
+            margin-top: 0;
             color: var(--text-main);
-            box-sizing: border-box;
-            -webkit-appearance: none;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
         }
-
-        input:focus, select:focus { border-color: var(--primary); background: #fff; }
-
-        .unit { position: absolute; right: 15px; font-weight: 700; color: var(--text-sub); }
-
-        /* 性別切換按鈕 */
-        .gender-toggle {
-            display: flex;
-            background: #F7F8FA;
-            border: 2px solid #E4E6EB;
-            border-radius: 12px;
-            overflow: hidden;
+        .input-group {
+            margin-bottom: 20px;
         }
-        .gender-btn {
-            flex: 1;
-            padding: 14px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-sub);
-            cursor: pointer;
-            transition: all 0.2s;
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-main);
         }
-        .gender-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* 心率區間樣式 */
-        .zone-grid { display: grid; gap: 10px; margin-top: 15px; }
-        .zone-pill {
-            display: flex; justify-content: space-between; padding: 12px 15px;
-            border-radius: 10px; color: white; font-weight: 700; font-size: 14px;
-        }
-
-        /* 專業內容區 */
-        .pro-section {
-            background: #F8F9FA;
-            border-left: 4px solid var(--primary);
-            padding: 18px;
-            margin-top: 20px;
-            border-radius: 0 12px 12px 0;
-        }
-        .pro-section h4 { margin: 0 0 10px 0; font-size: 16px; color: var(--primary); }
-        .pro-section p { font-size: 14.5px; color: #333; line-height: 1.6; margin-bottom: 12px; }
-        .pro-section p:last-child { margin-bottom: 0; }
-
-        /* 營養數據網格 */
-        .nutrition-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-        .nutri-box {
-            background: #fff;
-            border: 1px solid #E4E6EB;
+        input[type="number"], select {
+            width: 100%;
             padding: 12px;
-            border-radius: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        }
+        .mhr-display {
             text-align: center;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
-        .nutri-title { font-size: 12px; color: var(--text-sub); font-weight: 700; margin-bottom: 5px; }
-        .nutri-val { font-size: 16px; color: var(--primary); font-weight: 900; }
-
-        /* BMI 儀表 */
-        .bmi-display { text-align: center; margin: 15px 0; }
-        .bmi-num { font-size: 52px; font-weight: 900; color: var(--primary); line-height: 1; }
-        
-        .gauge-container {
-            height: 12px;
-            background: linear-gradient(to right, #3B82F6 0%, #10B981 25%, #F59E0B 50%, #EF4444 100%);
-            border-radius: 6px;
-            margin: 35px 0 20px;
-            position: relative;
+        .mhr-display h3 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary);
         }
-        .gauge-pointer {
-            position: absolute; top: -15px; width: 4px; height: 30px; background: #000;
-            transition: left 0.8s ease-out;
+        .mhr-display p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
         }
-        .gauge-pointer::after {
-            content: ''; position: absolute; bottom: -8px; left: -6px;
-            border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #000;
+        .info-alert {
+            background-color: var(--alert-bg);
+            color: var(--alert-text);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffeeba;
         }
-
-        /* 底部導航 */
-        .tab-nav {
-            position: fixed; bottom: 0; width: 100%; max-width: 500px;
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-            display: flex; border-top: 1px solid #ddd; padding: 12px 0 25px;
-            z-index: 100;
+        .report-section {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin-top: 25px;
+            border-radius: 0 8px 8px 0;
         }
-        .nav-item { flex: 1; text-align: center; color: var(--text-sub); cursor: pointer; transition: all 0.2s;}
-        .nav-item.active { color: var(--primary); transform: translateY(-2px);}
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
-        .nav-item span { font-size: 12px; font-weight: 700; }
-
-        .btn-copy {
-            width: 100%; padding: 16px; background: var(--primary); color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 800;
-            margin-top: 20px; box-shadow: 0 4px 12px rgba(0,71,255,0.2); cursor: pointer;
+        .report-section h4 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 16px;
         }
-        .btn-copy:active { transform: scale(0.97); }
-
+        .report-section h4:first-child {
+            margin-top: 0;
+        }
+        .report-section p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        .report-section p:last-child {
+            margin-bottom: 0;
+        }
+        .action-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .action-btn:hover {
+            background-color: var(--primary-hover);
+        }
         .toast {
-            position: fixed; top: 20px; background: #333; color: white; left: 50%; transform: translateX(-50%);
-            padding: 12px 24px; border-radius: 50px; font-size: 15px; font-weight: 700; z-index: 999; white-space: nowrap;
+            text-align: center;
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: bold;
         }
-
-        .fade-enter-active, .fade-leave-active { transition: all 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(10px); }
     </style>
 </head>
 <body>
 
-<div id="app" v-cloak>
-    <header>
-        <img src="logo.png" alt="fitworkhk" class="logo-img">
-        <div class="brand-name">FITWORKHK ASSESSMENT PRO</div>
-    </header>
-
-    <main v-if="activeTab === 'hr'">
-        <div class="card">
-            <h2><i class="fa-solid fa-heart-pulse" style="color: #EF4444;"></i> 專業心率分析</h2>
-            <div class="input-group">
-                <label>年齡 (Age)</label>
-                <div class="input-box">
-                    <input type="number" v-model="age" inputmode="numeric" placeholder="請輸入年齡">
-                    <span class="unit">歲</span>
-                </div>
-            </div>
-
-            <transition name="fade">
-                <div v-if="age > 0">
-                    <div class="input-group">
-                        <label>訓練目標</label>
-                        <select v-model="hrGoal">
-                            <option value="fatLoss">減脂與基礎塑形</option>
-                            <option value="cardio">提升心肺耐力</option>
-                            <option value="performance">增強爆發力與運動表現</option>
-                        </select>
-                    </div>
-
-                    <div style="text-align: center; margin: 15px 0;">
-                        <div style="font-size: 13px; color: var(--text-sub); font-weight: 700;">最大心跳率 (MHR)</div>
-                        <div style="font-size: 36px; font-weight: 900; color: var(--primary);">{{ mhr }} bpm</div>
-                    </div>
-
-                    <div class="zone-grid">
-                        <div class="zone-pill" :style="{background: 'var(--zone1)'}"><span>低強度 (50-60%)</span><span>{{ getBPM(0.5) }}-{{ getBPM(0.6) }}</span></div>
-                        <div class="zone-pill" :style="{background: 'var(--zone2)'}"><span>中低強度 (60-75%)</span><span>{{ getBPM(0.6) }}-{{ getBPM(0.75) }}</span></div>
-                        <div class="zone-pill" :style="{background: 'var(--zone3)'}"><span>中高強度 (75-85%)</span><span>{{ getBPM(0.75) }}-{{ getBPM(0.85) }}</span></div>
-                        <div class="zone-pill" :style="{background: 'var(--zone4)'}"><span>高強度 (85-100%)</span><span>{{ getBPM(0.85) }}-{{ mhr }}</span></div>
-                    </div>
-
-                    <div class="pro-section">
-                        <h4>📊 數據總結</h4>
-                        <p>根據您輸入的 <strong>{{ age }} 歲</strong>，您的預估最大心跳率 (MHR) 為 <strong>{{ mhr }} bpm</strong>。這代表了您在極限運動下的理論最高心跳值。</p>
-
-                        <h4>💡 原理解釋</h4>
-                        <p>心跳率是反映運動強度的客觀指標。透過監測心跳，我們可以確保您的訓練停留在正確的「強度區間」，這能有效避免過度勞累，同時精準打擊您的訓練目標。</p>
-
-                        <h4>🎯 訓練建議 ({{ currentHRData.title }})</h4>
-                        <p>{{ currentHRData.recommendation }}</p>
-
-                        <h4>🚀 提升體能具體方案</h4>
-                        <p>{{ currentHRData.improvement }}</p>
-                    </div>
-                    <button class="btn-copy" @click="copyHRReport">複製完整評估報告</button>
-                </div>
-            </transition>
+<div id="app">
+    <div class="calculator-container">
+        <h2>體適能評估與心跳率分析</h2>
+        
+        <div class="input-group">
+            <label for="age">請輸入您的年齡：</label>
+            <input type="number" id="age" v-model="age" min="10" max="100" placeholder="例如：30">
         </div>
-    </main>
 
-    <main v-if="activeTab === 'bmi'">
-        <div class="card">
-            <h2><i class="fa-solid fa-weight-scale" style="color: #3B82F6;"></i> BMI 及代謝綜合評估</h2>
-            
-            <div class="input-group">
-                <label>性別 (Gender)</label>
-                <div class="gender-toggle">
-                    <div class="gender-btn" :class="{active: gender === 'M'}" @click="gender = 'M'">男性</div>
-                    <div class="gender-btn" :class="{active: gender === 'F'}" @click="gender = 'F'">女性</div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>年齡 (Age) <span style="font-weight:400; font-size:11px;">*用於計算代謝率</span></label>
-                <div class="input-box">
-                    <input type="number" v-model="age" inputmode="numeric" placeholder="請輸入年齡">
-                    <span class="unit">歲</span>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>身高 (Height)</label>
-                <div class="input-box">
-                    <input type="number" v-model="height" inputmode="numeric" placeholder="例如: 175">
-                    <span class="unit">cm</span>
-                </div>
-            </div>
-            
-            <div class="input-group">
-                <label>體重 (Weight)</label>
-                <div class="input-box">
-                    <input type="number" v-model="weight" inputmode="decimal" placeholder="例如: 70.5">
-                    <span class="unit">kg</span>
-                </div>
-            </div>
-
-            <transition name="fade">
-                <div v-if="bmi > 0 && age > 0">
-                    <div class="bmi-display">
-                        <div class="bmi-num">{{ bmi }}</div>
-                        <div style="font-weight: 700; color: var(--text-sub);">你的 BMI 指數</div>
-                    </div>
-
-                    <div class="gauge-container">
-                        <div class="gauge-pointer" :style="{left: bmiPos + '%'}"></div>
-                    </div>
-
-                    <div class="pro-section" :style="{'border-color': bmiColor}">
-                        <h4 :style="{color: bmiColor}">評估結論：{{ bmiStatus }}</h4>
-                        <p><strong>⚖️ 理想體重範圍：</strong><br>{{ idealWeightRange }}</p>
-                    </div>
-
-                    <h4 style="margin-top: 25px; margin-bottom: 5px; font-size: 16px; color: var(--text-main);"><i class="fa-solid fa-fire"></i> 每日營養攝取建議</h4>
-                    <p style="font-size: 12px; color: var(--text-sub); margin-top: 0;">基於 Mifflin-St Jeor 公式及您的活動目標計算：</p>
-                    
-                    <div class="nutrition-grid">
-                        <div class="nutri-box">
-                            <div class="nutri-title">基礎代謝率 (BMR)</div>
-                            <div class="nutri-val">{{ bmr }} kcal</div>
-                        </div>
-                        <div class="nutri-box">
-                            <div class="nutri-title">目標熱量 (TDEE調整)</div>
-                            <div class="nutri-val">{{ targetCalories }} kcal</div>
-                        </div>
-                        <div class="nutri-box">
-                            <div class="nutri-title">每日蛋白質建議</div>
-                            <div class="nutri-val">{{ proteinRange }}</div>
-                        </div>
-                        <div class="nutri-box">
-                            <div class="nutri-title">每日水份攝取</div>
-                            <div class="nutri-val">{{ waterIntake }} 公升</div>
-                        </div>
-                    </div>
-
-                    <div class="pro-section" style="border-color: #10B981;">
-                        <h4 style="color: #10B981;"><i class="fa-solid fa-stethoscope"></i> 專家建議與行動方案</h4>
-                        <p style="white-space: pre-line; line-height: 1.7;">{{ bmiAdvice }}</p>
-                    </div>
-
-                    <button class="btn-copy" @click="copyBMIReport">複製完整綜合報告</button>
-                </div>
-            </transition>
+        <div class="input-group" v-if="age > 0">
+            <label for="goal">請選擇輸出選項 (主要訓練目標)：</label>
+            <select id="goal" v-model="selectedGoal">
+                <option value="fatLoss">減脂與基礎塑形</option>
+                <option value="cardio">提升心肺耐力</option>
+                <option value="performance">增強爆發力與運動表現</option>
+            </select>
         </div>
-    </main>
 
-    <nav class="tab-nav">
-        <div class="nav-item" :class="{active: activeTab === 'hr'}" @click="activeTab = 'hr'">
-            <i class="fa-solid fa-heart-pulse"></i><span>心率分析</span>
+        <div class="mhr-display" v-if="age > 0">
+            <h3>{{ mhr }} bpm</h3>
+            <p>最大心跳率 (Maximal Heart Rate, MHR)</p>
         </div>
-        <div class="nav-item" :class="{active: activeTab === 'bmi'}" @click="activeTab = 'bmi'">
-            <i class="fa-solid fa-clipboard-user"></i><span>綜合評估</span>
-        </div>
-    </nav>
 
-    <transition name="fade">
-        <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
-    </transition>
+        <div class="info-alert" v-if="age > 0">
+            <strong>⚠️ 身體組成評估注意：</strong><br>
+            坊間常用 BMI (身高體重指數) 作為標準，但 BMI <strong>無法區分肌肉同脂肪嘅重量</strong>。要準確評估健康同體態，<strong>測量「體脂肪率 (Body Fat %)」及「骨骼肌重量」會更具指標性及正確</strong>。相同 BMI 嘅人，體脂率可以完全唔同。
+        </div>
+
+        <div class="report-section" v-if="age > 0">
+            <h4>📊 數據總結</h4>
+            <p>根據您輸入的 <strong>{{ age }} 歲</strong>，您的預估最大心跳率 (MHR) 為 <strong>{{ mhr }} bpm</strong>。這代表了您在極限運動下的理論最高心跳值。</p>
+
+            <h4>💡 原理解釋</h4>
+            <p>心跳率是反映運動強度的客觀指標。透過監測心跳，我們可以確保您的訓練停留在正確的「強度區間」，這能有效避免過度勞累，同時精準打擊您的訓練目標。</p>
+
+            <h4>🎯 訓練建議 ({{ currentGoalData.title }})</h4>
+            <p>{{ currentGoalData.recommendation }}</p>
+
+            <h4>🚀 提升體能具體方案</h4>
+            <p>{{ currentGoalData.improvement }}</p>
+
+            <h4>💪 肌肉流失情況及抗衰老建議</h4>
+            <p><strong>年齡階段分析：</strong>{{ muscleLossData.situation }}</p>
+            <p><strong>專業建議：</strong>{{ muscleLossData.advice }}</p>
+        </div>
+
+        <button class="action-btn" v-if="age > 0" @click="copyReport">複製完整報告</button>
+        <div class="toast" v-if="showToast">✅ 報告已複製到剪貼簿！</div>
+    </div>
 </div>
 
 <script>
@@ -366,145 +205,103 @@
 
     createApp({
         setup() {
-            const activeTab = ref('hr');
-            const toastMsg = ref('');
-            
-            // 全域共用變數
-            const age = ref('');
-            const gender = ref('M');
-            const height = ref('');
-            const weight = ref('');
+            const age = ref(30);
+            const selectedGoal = ref('fatLoss');
+            const showToast = ref(false);
 
-            // ================= 心率模組 =================
-            const hrGoal = ref('cardio');
             const mhr = computed(() => {
-                const a = parseInt(age.value) || 0;
-                return a > 0 ? 220 - a : 0;
+                const currentAge = parseInt(age.value) || 0;
+                return 220 - currentAge;
             });
-            const getBPM = (pct) => Math.round(mhr.value * pct);
 
-            const hrGoalsData = {
+            // 訓練目標數據
+            const goalsData = {
                 fatLoss: {
                     title: "減脂與基礎塑形",
-                    recommendation: () => `針對您的目標，建議將主要訓練心跳維持在「中低強度」區間（大約 ${getBPM(0.6)} - ${getBPM(0.75)} bpm）。這個區間能最高效地利用脂肪作為主要能量來源。`,
+                    recommendation: `針對您的目標，建議將主要訓練心跳維持在「中低強度」區間（大約 ${Math.round(mhr.value * 0.6)} - ${Math.round(mhr.value * 0.75)} bpm）。這個區間能最高效地利用脂肪作為主要能量來源。`,
                     improvement: "每週建議進行 3-4 次，每次 30-45 分鐘的穩定節奏運動。配合健康飲食，建立熱量缺口，效果會最明顯。"
                 },
                 cardio: {
                     title: "提升心肺耐力",
-                    recommendation: () => `要強化心肺，建議將訓練強度推高至「中高強度」區間（大約 ${getBPM(0.75)} - ${getBPM(0.85)} bpm）。這能有效增加心臟泵血能力和肺活量。`,
+                    recommendation: `要強化心肺，建議將訓練強度推高至「中高強度」區間（大約 ${Math.round(mhr.value * 0.75)} - ${Math.round(mhr.value * 0.85)} bpm）。這能有效增加心臟泵血能力和肺活量。`,
                     improvement: "建議加入高低強度間歇訓練。例如透過 CardioStep (踏板) 或彈床等高強度功能性訓練，讓心跳在短時間內推升至中高強度，再進行短暫恢復，能極速提升整體心肺適能。"
                 },
                 performance: {
                     title: "增強爆發力與運動表現",
-                    recommendation: () => `為了突破體能極限，您需要短暫進入「高強度」區間（大約 ${getBPM(0.85)} - ${mhr.value} bpm）。這有助於提升乳酸閾值及肌肉爆發力。`,
+                    recommendation: `為了突破體能極限，您需要短暫進入「高強度」區間（大約 ${Math.round(mhr.value * 0.85)} - ${mhr.value} bpm）。這有助於提升乳酸閾值及肌肉爆發力。`,
                     improvement: "建議每週安排 1-2 次高強度間歇訓練 (HIIT) 或極限衝刺訓練。注意此強度對身體負荷較大，訓練後必須確保有充足的營養補充與休息恢復時間。"
                 }
             };
 
-            const currentHRData = computed(() => {
-                const data = hrGoalsData[hrGoal.value];
-                return { ...data, recommendation: data.recommendation() };
+            const currentGoalData = computed(() => {
+                return goalsData[selectedGoal.value];
             });
 
-            // ================= 代謝與 BMI 模組 =================
-            const bmi = computed(() => {
-                const h = parseFloat(height.value) / 100;
-                const w = parseFloat(weight.value);
-                return (h > 0 && w > 0) ? (w / (h * h)).toFixed(1) : 0;
-            });
-            
-            // Mifflin-St Jeor 公式計算 BMR
-            const bmr = computed(() => {
-                const w = parseFloat(weight.value);
-                const h = parseFloat(height.value);
-                const a = parseInt(age.value);
-                if (!w || !h || !a) return 0;
-                
-                let base = (10 * w) + (6.25 * h) - (5 * a);
-                return gender.value === 'M' ? Math.round(base + 5) : Math.round(base - 161);
-            });
-
-            // 計算 TDEE 及目標熱量 (假設輕度活動 1.375，根據 BMI 設定熱量缺口或盈餘)
-            const targetCalories = computed(() => {
-                if (bmr.value === 0) return 0;
-                const tdee = bmr.value * 1.375;
-                if (bmi.value < 18.5) return Math.round(tdee + 300); // 熱量盈餘
-                if (bmi.value >= 24) return Math.round(tdee - 500); // 熱量缺口
-                return Math.round(tdee); // 維持
+            // 根據年齡動態生成真實肌肉流失數據及建議
+            const muscleLossData = computed(() => {
+                const currentAge = parseInt(age.value) || 0;
+                if (currentAge < 30) {
+                    return {
+                        situation: "30歲前是人體肌肉量與骨質密度的巔峰期，此階段身體合成肌肉的效率最高。",
+                        advice: "把握黃金期建立肌肉儲備。建議保持每週 2-3 次的全身性阻力訓練，並確保攝取足夠優質蛋白質，為未來的身體健康打下堅實基礎。"
+                    };
+                } else if (currentAge >= 30 && currentAge < 50) {
+                    return {
+                        situation: "根據運動科學研究，人體在30歲之後，肌肉量每10年會自然流失約 3% 至 8%，基礎代謝率亦會隨之下降。",
+                        advice: "為對抗肌肉流失及預防中年發福，必須將「阻力訓練 (如舉重、TRX)」納入常規運動中。同時需嚴格管理飲食，攝取充足蛋白質以維持肌肉合成，避免因肌肉減少而導致關節勞損。"
+                    };
+                } else {
+                    return {
+                        situation: "50歲後，肌肉流失速度會顯著加快（肌少症風險增加），流失率可達每10年 10% 以上，並伴隨骨質流失，影響平衡力及活動能力。",
+                        advice: "強烈建議每週進行 2-3 次中等強度的功能性阻力訓練，以維持下肢力量與核心穩定，減少跌倒風險。運動後必須及時補充優質蛋白質及鈣質，延緩肌肉與骨質老化。"
+                    };
+                }
             });
 
-            // 蛋白質計算 (1.2g - 1.6g 每公斤體重，針對有運動習慣人士)
-            const proteinRange = computed(() => {
-                const w = parseFloat(weight.value);
-                if (!w) return '0g';
-                return `${Math.round(w * 1.2)}g - ${Math.round(w * 1.6)}g`;
-            });
+            // 複製報告功能
+            const copyReport = () => {
+                const reportText = `
+【體適能評估與心跳率分析報告】
+年齡：${age.value} 歲
+最大心跳率 (MHR)：${mhr.value} bpm
 
-            // 水份計算 (每公斤 35ml)
-            const waterIntake = computed(() => {
-                const w = parseFloat(weight.value);
-                return w ? (w * 35 / 1000).toFixed(1) : '0';
-            });
+⚠️ [身體組成評估注意]
+坊間常用 BMI (身高體重指數) 作為標準，但 BMI 無法區分肌肉與脂肪的重量。要準確評估健康同體態，測量「體脂肪率 (Body Fat %)」及「骨骼肌重量」會更具指標性及正確。
 
-            const bmiPos = computed(() => Math.min(Math.max(((bmi.value - 15) / 20) * 100, 0), 100));
-            
-            // 亞洲標準 BMI
-            const bmiStatus = computed(() => {
-                if (bmi.value < 18.5) return '體重過輕 (Underweight)';
-                if (bmi.value < 24) return '標準體重 (Normal)';
-                if (bmi.value < 28) return '體重過重 (Overweight)';
-                return '肥胖 (Obese)';
-            });
-            
-            const bmiColor = computed(() => {
-                if (bmi.value < 18.5) return '#3B82F6';
-                if (bmi.value < 24) return '#10B981';
-                if (bmi.value < 28) return '#F59E0B';
-                return '#EF4444';
-            });
-            
-            const idealWeightRange = computed(() => {
-                const h = parseFloat(height.value) / 100;
-                return h > 0 ? `${(18.5 * h * h).toFixed(1)}kg - ${(23.9 * h * h).toFixed(1)}kg` : '--';
-            });
+[數據總結]
+根據您的年齡，預估最大心跳率為 ${mhr.value} bpm。
 
-            const bmiAdvice = computed(() => {
-                if (bmi.value < 18.5) return `【生理現況】目前體重處於過輕水平，可能伴隨肌肉量不足及基礎代謝率 (BMR) 偏低。
-【介入方案】需要啟動「熱量盈餘 (Caloric Surplus)」計畫，每日目標熱量建議達到 ${targetCalories.value} kcal。飲食上需有系統地攝取優質碳水化合物與高純度蛋白質 (${proteinRange.value})；訓練方面，建議配合適度的心肺功能訓練，以促進肌肉合成並提升整體營養吸收能力。`;
-                
-                if (bmi.value < 24) return `【生理現況】體重落在標準健康區間，基礎健康風險較低，整體代謝功能良好。
-【介入方案】現階段目標應從「控制體重」升級為「優化身體組成 (Body Composition)」。建議維持每日約 ${targetCalories.value} kcal 的熱量平衡；訓練上可透過 CardioStep 或高強度功能性訓練來突破體能樽頸，進一步降低體脂率並提升肌肉線條的清晰度。`;
-                
-                if (bmi.value < 28) return `【生理現況】體重超出理想範圍，身體可能已開始累積多餘脂肪，並影響基礎代謝效率。
-【介入方案】需精準創造「熱量缺口 (Caloric Deficit)」，每日熱量攝取建議控制在 ${targetCalories.value} kcal。飲食上務必確保 ${proteinRange.value} 的蛋白質攝取以防肌肉流失。
+[訓練建議 - ${currentGoalData.value.title}]
+${currentGoalData.value.recommendation}
 
-🚨 由於您的數值顯示可能有脂肪囤積風險，強烈建議預約【fitworkhk 教練進行一對一健康及體態分析】，為您量身定制安全、有效的科學減脂與功能性訓練計畫。`;
-                
-                return `【生理現況】指數處於肥胖警戒線，心血管及代謝負擔顯著提升，且下肢關節長期承受過大負荷。
-【介入方案】必須立即啟動全面的「體重管理系統」。每日熱量需嚴格控制在 ${targetCalories.value} kcal 內。運動初期應避免高衝擊關節動作，需由專業人士指導基礎功能性活動。
+[提升體能具體方案]
+${currentGoalData.value.improvement}
 
-🚨 您的健康狀況需要專業介入！強烈建議立即預約【fitworkhk 教練進行一對一健康及體態分析】，透過教練的系統化評估，為您建立一套結合營養重整與安全訓練的完整改善方案。`;
-            });
+💪 [肌肉流失情況及抗衰老建議]
+- 年齡階段分析：${muscleLossData.value.situation}
+- 專業建議：${muscleLossData.value.advice}
+                `.trim();
 
-            const showToast = (msg) => {
-                toastMsg.value = msg;
-                setTimeout(() => toastMsg.value = '', 2500);
+                navigator.clipboard.writeText(reportText).then(() => {
+                    showToast.value = true;
+                    setTimeout(() => {
+                        showToast.value = false;
+                    }, 3000);
+                });
             };
 
-            const copyHRReport = () => {
-                const report = `【fitworkhk 心率評估報告】\n年齡：${age.value} 歲\n最大心跳率 (MHR)：${mhr.value} bpm\n\n[建議強度區間]\n• 低強度：${getBPM(0.5)}-${getBPM(0.6)} bpm\n• 中低強度：${getBPM(0.6)}-${getBPM(0.75)} bpm\n• 中高強度：${getBPM(0.75)}-${getBPM(0.85)} bpm\n• 高強度：${getBPM(0.85)}-${mhr.value} bpm\n\n[專業建議]\n${currentHRData.value.recommendation}\n\n[體能方案]\n${currentHRData.value.improvement}`;
-                navigator.clipboard.writeText(report).then(() => showToast('✅ 報告已複製'));
-            };
-
-            const copyBMIReport = () => {
-                const genderText = gender.value === 'M' ? '男' : '女';
-                const report = `【fitworkhk 綜合評估及代謝報告】\n基本資料：${genderText} / ${age.value}歲 / ${height.value}cm / ${weight.value}kg\n\n[體格指標]\nBMI 指數：${bmi.value}\n評估結論：${bmiStatus.value}\n理想體重範圍：${idealWeightRange.value}\n\n[每日營養及代謝建議]\n基礎代謝率 (BMR)：${bmr.value} kcal\n目標攝取熱量：${targetCalories.value} kcal\n建議蛋白質攝取：${proteinRange.value}\n建議水份攝取：${waterIntake.value} 公升\n\n[專家建議與行動方案]\n${bmiAdvice.value}`;
-                navigator.clipboard.writeText(report).then(() => showToast('✅ 綜合報告已複製'));
-            };
-
-            return { activeTab, age, gender, hrGoal, mhr, getBPM, currentHRData, height, weight, bmi, bmr, targetCalories, proteinRange, waterIntake, bmiPos, bmiStatus, bmiColor, idealWeightRange, bmiAdvice, toastMsg, copyHRReport, copyBMIReport };
+            return {
+                age,
+                mhr,
+                selectedGoal,
+                currentGoalData,
+                muscleLossData,
+                copyReport,
+                showToast
+            }
         }
     }).mount('#app');
 </script>
+
 </body>
 </html>
