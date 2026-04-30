@@ -49,7 +49,7 @@
         #app {
             width: 100%;
             max-width: 500px;
-            padding-bottom: 90px; /* 留位俾底部導航 */
+            padding-bottom: 90px;
             position: relative;
         }
 
@@ -73,10 +73,7 @@
         }
 
         /* Logo 與 Header */
-        header {
-            text-align: center;
-            padding: 20px 0 10px;
-        }
+        header { text-align: center; padding: 20px 0 10px; }
         .logo-icon {
             width: 45px; height: 45px;
             background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
@@ -144,9 +141,7 @@
         .pro-section p:last-child { margin-bottom: 0; }
 
         /* 營養數據網格 */
-        .nutrition-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0;
-        }
+        .nutrition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
         .nutri-box {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 15px 12px; border-radius: 10px; text-align: center;
@@ -226,6 +221,7 @@
                         <label>首要訓練目標</label>
                         <select v-model="hrGoal">
                             <option value="fatLoss">針對性減脂與塑形</option>
+                            <option value="muscleGain">健康增重與增肌</option>
                             <option value="cardio">突破心肺耐力樽頸</option>
                             <option value="performance">極限體能與爆發力</option>
                         </select>
@@ -388,6 +384,11 @@
                     imp = a >= 40 
                         ? `鑑於您已進入代謝逐漸減慢的階段，單靠節食容易流失肌肉。建議每週進行 3 次 40 分鐘的低關節衝擊有氧運動（如單車、划船機）。若能配合每週 1-2 次的阻力訓練維持肌肉量，預防復胖的效果會顯著倍增。`
                         : `每週建議累積 150 分鐘維持在此心率的運動。配合飲食上的熱量缺口（可參考「代謝評估」分頁數據），能達到最理想的減脂及線條雕塑效果。`;
+                } else if (target === 'muscleGain') {
+                    rec = `要有效增肌與健康增重，心率並非唯一指標，關鍵在於「肌肉破壞與修復」。建議進行重量訓練時，讓心跳在發力組短暫推升至 (${getBPM(0.70)} - ${getBPM(0.85)} bpm)，並在組間休息確保心率平復，以維持下一組的高質量訓練。`;
+                    imp = a >= 40
+                        ? `鑑於年齡增長會令肌肉合成效率下降（肌少症風險增加），強烈建議以「固定器械」配合自由重量進行安全阻力訓練。飲食上必須創造熱量盈餘，並嚴格確保每日攝取 ${proteinRange.value} 的蛋白質作為肌肉生長原料。`
+                        : `建議每週進行 3-4 次針對大肌群（胸、背、腿）的阻力訓練，並落實「漸進式超負荷」。飲食是增重的靈魂，必須建立每日 300-500 kcal 的乾淨熱量盈餘（Clean Bulk），肌肉才有充足原料生長。`;
                 } else if (target === 'cardio') {
                     rec = `強化心臟泵血能力與肺活量的關鍵，在於讓心跳進入「中高強度」(${getBPM(0.75)} - ${getBPM(0.85)} bpm) 區間，讓心肺系統適應壓力並產生代償性增長。`;
                     imp = a >= 50
