@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專業心跳率強度計算與分析系統</title>
+    <title>科技感體適能心跳率分析系統</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --primary: #007bff;
-            --primary-hover: #0056b3;
-            --secondary: #6c757d;
-            --zone1: #28a745;
-            --zone2: #85c1e9;
-            --zone3: #f39c12;
-            --zone4: #dc3545;
-            --alert-bg: #fff3cd;
-            --alert-text: #856404;
+            /* 科技感主色調 */
+            --glass-bg: rgba(16, 25, 45, 0.65);
+            --glass-border: rgba(0, 195, 255, 0.3);
+            --neon-blue: #00e5ff;
+            --neon-purple: #b500ff;
+            --text-main: #ffffff;
+            --text-muted: #a0aec0;
+            
+            /* 強度區間顏色 (還原圖片) */
+            --zone1-bg: rgba(40, 167, 69, 0.2);
+            --zone1-border: #28a745;
+            --zone2-bg: rgba(23, 162, 184, 0.2);
+            --zone2-border: #17a2b8;
+            --zone3-bg: rgba(253, 126, 20, 0.2);
+            --zone3-border: #fd7e14;
+            --zone4-bg: rgba(220, 53, 69, 0.2);
+            --zone4-border: #dc3545;
         }
+
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft JhengHei', sans-serif;
-            background-color: var(--bg-color);
+            /* 模擬健身室暗色背景 */
+            background: linear-gradient(135deg, #0f172a 0%, #1e1e2f 100%);
             color: var(--text-main);
             display: flex;
             justify-content: center;
@@ -33,133 +39,217 @@
             padding: 20px;
             line-height: 1.6;
         }
-        .calculator-container {
-            background-color: var(--card-bg);
+
+        /* 核心玻璃面板設計 */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-top: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 195, 255, 0.1);
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             padding: 30px;
             width: 100%;
             max-width: 550px;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* 底部金屬裝飾條 */
+        .glass-panel::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            box-shadow: 0 -2px 15px rgba(0, 229, 255, 0.5);
+        }
+
         h2 {
             text-align: center;
             margin-top: 0;
-            color: var(--text-main);
-            border-bottom: 2px solid #eee;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 15px;
+            letter-spacing: 2px;
         }
+
         .input-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
-            font-weight: bold;
+            font-size: 14px;
             margin-bottom: 8px;
-            color: var(--text-main);
+            color: var(--neon-blue);
+            letter-spacing: 1px;
         }
+
+        /* 科技感輸入框 */
         input[type="number"], select {
             width: 100%;
             padding: 12px;
             font-size: 16px;
-            border: 1px solid #ccc;
+            color: white;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 195, 255, 0.3);
             border-radius: 8px;
             box-sizing: border-box;
-            background-color: #fff;
+            transition: all 0.3s ease;
         }
+
         input[type="number"]:focus, select:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            background: rgba(0, 0, 0, 0.6);
         }
-        .mhr-display {
-            text-align: center;
-            background-color: #e9ecef;
+
+        select option {
+            background-color: #1e1e2f;
+            color: white;
+        }
+
+        /* 還原圖片的強度區間清單 */
+        .zones-container {
+            margin: 25px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 15px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .zones-title {
+            text-align: left;
+            font-size: 18px;
+            color: white;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--neon-blue);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .zone-pill {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 10px;
             border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .mhr-display h3 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--primary);
-        }
-        .mhr-display p {
-            margin: 5px 0 0 0;
+            border-left: 4px solid;
             font-size: 14px;
-            color: var(--text-muted);
         }
+
+        .zone-pill span.dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 5px currentColor;
+        }
+
+        .zone-pill.low { background: var(--zone1-bg); border-color: var(--zone1-border); color: #fff; }
+        .zone-pill.low .dot { background: var(--zone1-border); color: var(--zone1-border); }
+        
+        .zone-pill.mid-low { background: var(--zone2-bg); border-color: var(--zone2-border); color: #fff; }
+        .zone-pill.mid-low .dot { background: var(--zone2-border); color: var(--zone2-border); }
+        
+        .zone-pill.mid-high { background: var(--zone3-bg); border-color: var(--zone3-border); color: #fff; }
+        .zone-pill.mid-high .dot { background: var(--zone3-border); color: var(--zone3-border); }
+        
+        .zone-pill.high { background: var(--zone4-bg); border-color: var(--zone4-border); color: #fff; }
+        .zone-pill.high .dot { background: var(--zone4-border); color: var(--zone4-border); }
+
+        .mhr-formula {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* 警告與報告區塊適應暗黑風 */
         .info-alert {
-            background-color: var(--alert-bg);
-            color: var(--alert-text);
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
             padding: 12px 15px;
             border-radius: 8px;
             font-size: 14px;
             margin-bottom: 20px;
-            border-left: 4px solid #ffeeba;
+            border-left: 4px solid #ffc107;
         }
+
         .report-section {
-            background-color: #f8f9fa;
-            border-left: 4px solid var(--primary);
+            background-color: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--neon-purple);
             padding: 15px 20px;
             margin-top: 25px;
             border-radius: 0 8px 8px 0;
+            color: #e2e8f0;
         }
+
         .report-section h4 {
             margin-top: 15px;
             margin-bottom: 10px;
-            color: var(--primary);
+            color: var(--neon-purple);
+            text-shadow: 0 0 5px rgba(181, 0, 255, 0.4);
             font-size: 16px;
         }
-        .report-section h4:first-child {
-            margin-top: 0;
-        }
-        .report-section p {
-            font-size: 14px;
-            margin-bottom: 15px;
-            color: #444;
-        }
-        .report-section p:last-child {
-            margin-bottom: 0;
-        }
+        .report-section h4:first-child { margin-top: 0; }
+        .report-section p { font-size: 14px; margin-bottom: 15px; line-height: 1.7; }
+        .report-section p:last-child { margin-bottom: 0; }
+        .report-section strong { color: white; }
+
         .action-btn {
             display: block;
             width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
+            padding: 14px;
+            background: linear-gradient(45deg, var(--neon-blue), #007bff);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            margin-top: 25px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+            letter-spacing: 1px;
         }
+
         .action-btn:hover {
-            background-color: var(--primary-hover);
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.6);
+            transform: translateY(-2px);
         }
+
         .toast {
             text-align: center;
-            color: #28a745;
+            color: var(--neon-blue);
             font-size: 14px;
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-blue);
         }
     </style>
 </head>
 <body>
 
 <div id="app">
-    <div class="calculator-container">
-        <h2>體適能評估與心跳率分析</h2>
+    <div class="glass-panel">
+        <h2>體適能數據中樞 (DATA ANALYTICS)</h2>
         
         <div class="input-group">
-            <label for="age">請輸入您的年齡：</label>
+            <label for="age">輸入年齡以啟動分析：</label>
             <input type="number" id="age" v-model="age" min="10" max="100" placeholder="例如：30">
         </div>
 
         <div class="input-group" v-if="age > 0">
-            <label for="goal">請選擇輸出選項 (主要訓練目標)：</label>
+            <label for="goal">選擇主要訓練目標：</label>
             <select id="goal" v-model="selectedGoal">
                 <option value="fatLoss">減脂與基礎塑形</option>
                 <option value="cardio">提升心肺耐力</option>
@@ -167,22 +257,40 @@
             </select>
         </div>
 
-        <div class="mhr-display" v-if="age > 0">
-            <h3>{{ mhr }} bpm</h3>
-            <p>最大心跳率 (Maximal Heart Rate, MHR)</p>
+        <div class="zones-container" v-if="age > 0">
+            <div class="zones-title">強度指標</div>
+            
+            <div class="zone-pill low">
+                <div><span class="dot"></span>低強度 50%~60% MHR</div>
+                <strong>{{ calculateBPM(0.5) }} - {{ calculateBPM(0.6) }}</strong>
+            </div>
+            
+            <div class="zone-pill mid-low">
+                <div><span class="dot"></span>中低強度 60%~75% MHR</div>
+                <strong>{{ calculateBPM(0.6) }} - {{ calculateBPM(0.75) }}</strong>
+            </div>
+
+            <div class="zone-pill mid-high">
+                <div><span class="dot"></span>中高強度 75%~85% MHR</div>
+                <strong>{{ calculateBPM(0.75) }} - {{ calculateBPM(0.85) }}</strong>
+            </div>
+
+            <div class="zone-pill high">
+                <div><span class="dot"></span>高強度 85%~100% MHR</div>
+                <strong>{{ calculateBPM(0.85) }} - {{ calculateBPM(1) }}</strong>
+            </div>
+            
+            <div class="mhr-formula">最大心跳率 (MHR) = 220 - 年齡 ({{ mhr }} bpm)</div>
         </div>
 
         <div class="info-alert" v-if="age > 0">
             <strong>⚠️ 身體組成評估注意：</strong><br>
-            坊間常用 BMI (身高體重指數) 作為標準，但 BMI <strong>無法區分肌肉同脂肪嘅重量</strong>。要準確評估健康同體態，<strong>測量「體脂肪率 (Body Fat %)」及「骨骼肌重量」會更具指標性及正確</strong>。相同 BMI 嘅人，體脂率可以完全唔同。
+            坊間常用 BMI 作為標準，但 BMI <strong>無法區分肌肉同脂肪的重量</strong>。要準確評估健康同體態，測量「體脂肪率」及「骨骼肌重量」會更具指標性及正確。
         </div>
 
         <div class="report-section" v-if="age > 0">
             <h4>📊 數據總結</h4>
-            <p>根據您輸入的 <strong>{{ age }} 歲</strong>，您的預估最大心跳率 (MHR) 為 <strong>{{ mhr }} bpm</strong>。這代表了您在極限運動下的理論最高心跳值。</p>
-
-            <h4>💡 原理解釋</h4>
-            <p>心跳率是反映運動強度的客觀指標。透過監測心跳，我們可以確保您的訓練停留在正確的「強度區間」，這能有效避免過度勞累，同時精準打擊您的訓練目標。</p>
+            <p>根據您 <strong>{{ age }} 歲</strong> 的數據，預估極限最高心跳值為 <strong>{{ mhr }} bpm</strong>。</p>
 
             <h4>🎯 訓練建議 ({{ currentGoalData.title }})</h4>
             <p>{{ currentGoalData.recommendation }}</p>
@@ -191,12 +299,12 @@
             <p>{{ currentGoalData.improvement }}</p>
 
             <h4>💪 肌肉流失情況及抗衰老建議</h4>
-            <p><strong>年齡階段分析：</strong>{{ muscleLossData.situation }}</p>
+            <p><strong>階段分析：</strong>{{ muscleLossData.situation }}</p>
             <p><strong>專業建議：</strong>{{ muscleLossData.advice }}</p>
         </div>
 
-        <button class="action-btn" v-if="age > 0" @click="copyReport">複製完整報告</button>
-        <div class="toast" v-if="showToast">✅ 報告已複製到剪貼簿！</div>
+        <button class="action-btn" v-if="age > 0" @click="copyReport">複製數據報告</button>
+        <div class="toast" v-if="showToast">✅ 報告已成功複製！</div>
     </div>
 </div>
 
@@ -214,7 +322,10 @@
                 return 220 - currentAge;
             });
 
-            // 訓練目標數據
+            const calculateBPM = (percentage) => {
+                return Math.round(mhr.value * percentage);
+            };
+
             const goalsData = {
                 fatLoss: {
                     title: "減脂與基礎塑形",
@@ -237,7 +348,6 @@
                 return goalsData[selectedGoal.value];
             });
 
-            // 根據年齡動態生成真實肌肉流失數據及建議
             const muscleLossData = computed(() => {
                 const currentAge = parseInt(age.value) || 0;
                 if (currentAge < 30) {
@@ -258,7 +368,6 @@
                 }
             });
 
-            // 複製報告功能
             const copyReport = () => {
                 const reportText = `
 【體適能評估與心跳率分析報告】
@@ -266,7 +375,7 @@
 最大心跳率 (MHR)：${mhr.value} bpm
 
 ⚠️ [身體組成評估注意]
-坊間常用 BMI (身高體重指數) 作為標準，但 BMI 無法區分肌肉與脂肪的重量。要準確評估健康同體態，測量「體脂肪率 (Body Fat %)」及「骨骼肌重量」會更具指標性及正確。
+坊間常用 BMI 作為標準，但 BMI 無法區分肌肉與脂肪的重量。要準確評估健康同體態，測量「體脂肪率」及「骨骼肌重量」會更具指標性及正確。
 
 [數據總結]
 根據您的年齡，預估最大心跳率為 ${mhr.value} bpm。
@@ -293,6 +402,7 @@ ${currentGoalData.value.improvement}
             return {
                 age,
                 mhr,
+                calculateBPM,
                 selectedGoal,
                 currentGoalData,
                 muscleLossData,
