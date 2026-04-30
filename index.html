@@ -3,32 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>科技感體適能心跳率分析系統</title>
+    <title>科技感體適能分析系統 V2</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         :root {
-            /* 科技感主色調 */
-            --glass-bg: rgba(16, 25, 45, 0.65);
+            --glass-bg: rgba(16, 25, 45, 0.75);
             --glass-border: rgba(0, 195, 255, 0.3);
             --neon-blue: #00e5ff;
             --neon-purple: #b500ff;
             --text-main: #ffffff;
             --text-muted: #a0aec0;
-            
-            /* 強度區間顏色 (還原圖片) */
-            --zone1-bg: rgba(40, 167, 69, 0.2);
             --zone1-border: #28a745;
-            --zone2-bg: rgba(23, 162, 184, 0.2);
             --zone2-border: #17a2b8;
-            --zone3-bg: rgba(253, 126, 20, 0.2);
             --zone3-border: #fd7e14;
-            --zone4-bg: rgba(220, 53, 69, 0.2);
             --zone4-border: #dc3545;
         }
 
+        /* 穩定顯示，防止開啟時畫面跳動 */
+        * { box-sizing: border-box; }
+
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft JhengHei', sans-serif;
-            /* 模擬健身室暗色背景 */
             background: linear-gradient(135deg, #0f172a 0%, #1e1e2f 100%);
             color: var(--text-main);
             display: flex;
@@ -37,203 +32,161 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            line-height: 1.6;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards; /* 使用淡入取代縮放 */
         }
 
-        /* 核心玻璃面板設計 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-top: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 195, 255, 0.1);
-            border-radius: 16px;
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
             padding: 30px;
             width: 100%;
             max-width: 550px;
             position: relative;
-            overflow: hidden;
         }
 
-        /* 底部金屬裝飾條 */
-        .glass-panel::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-            box-shadow: 0 -2px 15px rgba(0, 229, 255, 0.5);
+        /* Logo 區域 */
+        .app-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 0 15px var(--neon-blue);
+            margin-bottom: 10px;
+        }
+        .brand-name {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
         }
 
         h2 {
             text-align: center;
-            margin-top: 0;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 15px;
-            letter-spacing: 2px;
+            margin: 0 0 25px 0;
+            color: white;
+            letter-spacing: 1px;
+            font-size: 22px;
         }
 
-        .input-group {
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
+        .input-group { margin-bottom: 15px; }
+
         label {
             display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: var(--neon-blue);
-            letter-spacing: 1px;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
         }
 
-        /* 科技感輸入框 */
         input[type="number"], select {
             width: 100%;
-            padding: 12px;
-            font-size: 16px;
+            padding: 10px;
+            font-size: 15px;
             color: white;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(0, 195, 255, 0.3);
-            border-radius: 8px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
         }
 
-        input[type="number"]:focus, select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: var(--neon-blue);
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
         }
 
-        select option {
-            background-color: #1e1e2f;
-            color: white;
-        }
-
-        /* 還原圖片的強度區間清單 */
-        .zones-container {
-            margin: 25px 0;
+        /* BMI 顯示區 */
+        .bmi-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bmi-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--neon-blue);
+            margin: 5px 0;
+        }
+
+        /* 強度區間 */
+        .zones-container {
+            background: rgba(0, 0, 0, 0.2);
             padding: 15px;
             border-radius: 12px;
-            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
         }
-
-        .zones-title {
-            text-align: left;
-            font-size: 18px;
-            color: white;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--neon-blue);
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-
         .zone-pill {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid;
-            font-size: 14px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            border-left: 3px solid;
         }
+        .zone-pill.z1 { border-color: var(--zone1-border); background: rgba(40, 167, 69, 0.1); }
+        .zone-pill.z2 { border-color: var(--zone2-border); background: rgba(23, 162, 184, 0.1); }
+        .zone-pill.z3 { border-color: var(--zone3-border); background: rgba(253, 126, 20, 0.1); }
+        .zone-pill.z4 { border-color: var(--zone4-border); background: rgba(220, 53, 69, 0.1); }
 
-        .zone-pill span.dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 5px currentColor;
-        }
-
-        .zone-pill.low { background: var(--zone1-bg); border-color: var(--zone1-border); color: #fff; }
-        .zone-pill.low .dot { background: var(--zone1-border); color: var(--zone1-border); }
-        
-        .zone-pill.mid-low { background: var(--zone2-bg); border-color: var(--zone2-border); color: #fff; }
-        .zone-pill.mid-low .dot { background: var(--zone2-border); color: var(--zone2-border); }
-        
-        .zone-pill.mid-high { background: var(--zone3-bg); border-color: var(--zone3-border); color: #fff; }
-        .zone-pill.mid-high .dot { background: var(--zone3-border); color: var(--zone3-border); }
-        
-        .zone-pill.high { background: var(--zone4-bg); border-color: var(--zone4-border); color: #fff; }
-        .zone-pill.high .dot { background: var(--zone4-border); color: var(--zone4-border); }
-
-        .mhr-formula {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 10px;
-        }
-
-        /* 警告與報告區塊適應暗黑風 */
         .info-alert {
-            background-color: rgba(255, 193, 7, 0.1);
+            background: rgba(255, 193, 7, 0.1);
             color: #ffc107;
-            padding: 12px 15px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 20px;
             border-left: 4px solid #ffc107;
         }
 
         .report-section {
-            background-color: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             border-left: 4px solid var(--neon-purple);
-            padding: 15px 20px;
-            margin-top: 25px;
+            padding: 15px;
             border-radius: 0 8px 8px 0;
-            color: #e2e8f0;
+            font-size: 14px;
         }
-
-        .report-section h4 {
-            margin-top: 15px;
-            margin-bottom: 10px;
-            color: var(--neon-purple);
-            text-shadow: 0 0 5px rgba(181, 0, 255, 0.4);
-            font-size: 16px;
-        }
+        .report-section h4 { color: var(--neon-purple); margin: 15px 0 5px 0; }
         .report-section h4:first-child { margin-top: 0; }
-        .report-section p { font-size: 14px; margin-bottom: 15px; line-height: 1.7; }
-        .report-section p:last-child { margin-bottom: 0; }
-        .report-section strong { color: white; }
 
         .action-btn {
-            display: block;
             width: 100%;
             padding: 14px;
             background: linear-gradient(45deg, var(--neon-blue), #007bff);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 25px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
-            letter-spacing: 1px;
-        }
-
-        .action-btn:hover {
-            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .toast {
-            text-align: center;
-            color: var(--neon-blue);
-            font-size: 14px;
-            margin-top: 15px;
-            font-weight: bold;
-            text-shadow: 0 0 5px var(--neon-blue);
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -241,177 +194,119 @@
 
 <div id="app">
     <div class="glass-panel">
-        <h2>體適能數據中樞 (DATA ANALYTICS)</h2>
-        
-        <div class="input-group">
-            <label for="age">輸入年齡以啟動分析：</label>
-            <input type="number" id="age" v-model="age" min="10" max="100" placeholder="例如：30">
+        <div class="app-logo">
+            <div class="logo-icon">⚡</div>
+            <div class="brand-name">SPORTS & HEALTH ANALYTICS</div>
         </div>
 
-        <div class="input-group" v-if="age > 0">
-            <label for="goal">選擇主要訓練目標：</label>
-            <select id="goal" v-model="selectedGoal">
-                <option value="fatLoss">減脂與基礎塑形</option>
-                <option value="cardio">提升心肺耐力</option>
-                <option value="performance">增強爆發力與運動表現</option>
-            </select>
+        <h2>體適能綜合評估報告</h2>
+        
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>年齡 (Age)</label>
+                <input type="number" v-model="age">
+            </div>
+            <div class="input-group">
+                <label>訓練目標 (Goal)</label>
+                <select v-model="selectedGoal">
+                    <option value="fatLoss">減脂與基礎塑形</option>
+                    <option value="cardio">提升心肺耐力</option>
+                    <option value="performance">極限運動表現</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>身高 (cm)</label>
+                <input type="number" v-model="height">
+            </div>
+            <div class="input-group">
+                <label>體重 (kg)</label>
+                <input type="number" v-model="weight">
+            </div>
+        </div>
+
+        <div class="bmi-card" v-if="bmi > 0">
+            <label>您的 BMI 指數</label>
+            <div class="bmi-value">{{ bmi }}</div>
+            <div style="font-size: 12px; color: var(--text-muted)">{{ bmiStatus }}</div>
         </div>
 
         <div class="zones-container" v-if="age > 0">
-            <div class="zones-title">強度指標</div>
-            
-            <div class="zone-pill low">
-                <div><span class="dot"></span>低強度 50%~60% MHR</div>
-                <strong>{{ calculateBPM(0.5) }} - {{ calculateBPM(0.6) }}</strong>
-            </div>
-            
-            <div class="zone-pill mid-low">
-                <div><span class="dot"></span>中低強度 60%~75% MHR</div>
-                <strong>{{ calculateBPM(0.6) }} - {{ calculateBPM(0.75) }}</strong>
-            </div>
-
-            <div class="zone-pill mid-high">
-                <div><span class="dot"></span>中高強度 75%~85% MHR</div>
-                <strong>{{ calculateBPM(0.75) }} - {{ calculateBPM(0.85) }}</strong>
-            </div>
-
-            <div class="zone-pill high">
-                <div><span class="dot"></span>高強度 85%~100% MHR</div>
-                <strong>{{ calculateBPM(0.85) }} - {{ calculateBPM(1) }}</strong>
-            </div>
-            
-            <div class="mhr-formula">最大心跳率 (MHR) = 220 - 年齡 ({{ mhr }} bpm)</div>
+            <div class="zone-pill z1"><span>低強度 (50-60%)</span><strong>{{ calc(0.5) }}-{{ calc(0.6) }} bpm</strong></div>
+            <div class="zone-pill z2"><span>中低強度 (60-75%)</span><strong>{{ calc(0.6) }}-{{ calc(0.75) }} bpm</strong></div>
+            <div class="zone-pill z3"><span>中高強度 (75-85%)</span><strong>{{ calc(0.75) }}-{{ calc(0.85) }} bpm</strong></div>
+            <div class="zone-pill z4"><span>高強度 (85-100%)</span><strong>{{ calc(0.85) }}-{{ mhr }} bpm</strong></div>
         </div>
 
         <div class="info-alert" v-if="age > 0">
-            <strong>⚠️ 身體組成評估注意：</strong><br>
-            坊間常用 BMI 作為標準，但 BMI <strong>無法區分肌肉同脂肪的重量</strong>。要準確評估健康同體態，測量「體脂肪率」及「骨骼肌重量」會更具指標性及正確。
+            <strong>⚠️ 重要提醒：</strong><br>
+            BMI 無法區分肌肉與脂肪。要準確評估體態，<strong>測量體脂肪率及骨骼肌重量會更正確</strong>。
         </div>
 
         <div class="report-section" v-if="age > 0">
-            <h4>📊 數據總結</h4>
-            <p>根據您 <strong>{{ age }} 歲</strong> 的數據，預估極限最高心跳值為 <strong>{{ mhr }} bpm</strong>。</p>
-
-            <h4>🎯 訓練建議 ({{ currentGoalData.title }})</h4>
-            <p>{{ currentGoalData.recommendation }}</p>
-
-            <h4>🚀 提升體能具體方案</h4>
-            <p>{{ currentGoalData.improvement }}</p>
-
-            <h4>💪 肌肉流失情況及抗衰老建議</h4>
-            <p><strong>階段分析：</strong>{{ muscleLossData.situation }}</p>
-            <p><strong>專業建議：</strong>{{ muscleLossData.advice }}</p>
+            <h4>🎯 訓練建議</h4>
+            <p>{{ goalText.recommendation }}</p>
+            <h4>💪 肌肉流失分析 ({{ age }}歲階段)</h4>
+            <p>{{ muscleData.situation }}</p>
+            <p><strong>建議：</strong>{{ muscleData.advice }}</p>
         </div>
 
-        <button class="action-btn" v-if="age > 0" @click="copyReport">複製數據報告</button>
-        <div class="toast" v-if="showToast">✅ 報告已成功複製！</div>
+        <button class="action-btn" @click="copyReport">複製完整報告</button>
     </div>
 </div>
 
 <script>
     const { createApp, ref, computed } = Vue;
-
     createApp({
         setup() {
             const age = ref(30);
+            const height = ref(175);
+            const weight = ref(70);
             const selectedGoal = ref('fatLoss');
-            const showToast = ref(false);
 
-            const mhr = computed(() => {
-                const currentAge = parseInt(age.value) || 0;
-                return 220 - currentAge;
+            const mhr = computed(() => 220 - (parseInt(age.value) || 0));
+            const calc = (p) => Math.round(mhr.value * p);
+
+            const bmi = computed(() => {
+                if (!height.value || !weight.value) return 0;
+                const hm = height.value / 100;
+                return (weight.value / (hm * hm)).toFixed(1);
             });
 
-            const calculateBPM = (percentage) => {
-                return Math.round(mhr.value * percentage);
-            };
-
-            const goalsData = {
-                fatLoss: {
-                    title: "減脂與基礎塑形",
-                    recommendation: `針對您的目標，建議將主要訓練心跳維持在「中低強度」區間（大約 ${Math.round(mhr.value * 0.6)} - ${Math.round(mhr.value * 0.75)} bpm）。這個區間能最高效地利用脂肪作為主要能量來源。`,
-                    improvement: "每週建議進行 3-4 次，每次 30-45 分鐘的穩定節奏運動。配合健康飲食，建立熱量缺口，效果會最明顯。"
-                },
-                cardio: {
-                    title: "提升心肺耐力",
-                    recommendation: `要強化心肺，建議將訓練強度推高至「中高強度」區間（大約 ${Math.round(mhr.value * 0.75)} - ${Math.round(mhr.value * 0.85)} bpm）。這能有效增加心臟泵血能力和肺活量。`,
-                    improvement: "建議加入高低強度間歇訓練。例如透過 CardioStep (踏板) 或彈床等高強度功能性訓練，讓心跳在短時間內推升至中高強度，再進行短暫恢復，能極速提升整體心肺適能。"
-                },
-                performance: {
-                    title: "增強爆發力與運動表現",
-                    recommendation: `為了突破體能極限，您需要短暫進入「高強度」區間（大約 ${Math.round(mhr.value * 0.85)} - ${mhr.value} bpm）。這有助於提升乳酸閾值及肌肉爆發力。`,
-                    improvement: "建議每週安排 1-2 次高強度間歇訓練 (HIIT) 或極限衝刺訓練。注意此強度對身體負荷較大，訓練後必須確保有充足的營養補充與休息恢復時間。"
-                }
-            };
-
-            const currentGoalData = computed(() => {
-                return goalsData[selectedGoal.value];
+            const bmiStatus = computed(() => {
+                if (bmi.value < 18.5) return '體重過輕';
+                if (bmi.value < 24) return '正常範圍';
+                if (bmi.value < 27) return '過重';
+                return '肥胖';
             });
 
-            const muscleLossData = computed(() => {
-                const currentAge = parseInt(age.value) || 0;
-                if (currentAge < 30) {
-                    return {
-                        situation: "30歲前是人體肌肉量與骨質密度的巔峰期，此階段身體合成肌肉的效率最高。",
-                        advice: "把握黃金期建立肌肉儲備。建議保持每週 2-3 次的全身性阻力訓練，並確保攝取足夠優質蛋白質，為未來的身體健康打下堅實基礎。"
-                    };
-                } else if (currentAge >= 30 && currentAge < 50) {
-                    return {
-                        situation: "根據運動科學研究，人體在30歲之後，肌肉量每10年會自然流失約 3% 至 8%，基礎代謝率亦會隨之下降。",
-                        advice: "為對抗肌肉流失及預防中年發福，必須將「阻力訓練 (如舉重、TRX)」納入常規運動中。同時需嚴格管理飲食，攝取充足蛋白質以維持肌肉合成，避免因肌肉減少而導致關節勞損。"
-                    };
-                } else {
-                    return {
-                        situation: "50歲後，肌肉流失速度會顯著加快（肌少症風險增加），流失率可達每10年 10% 以上，並伴隨骨質流失，影響平衡力及活動能力。",
-                        advice: "強烈建議每週進行 2-3 次中等強度的功能性阻力訓練，以維持下肢力量與核心穩定，減少跌倒風險。運動後必須及時補充優質蛋白質及鈣質，延緩肌肉與骨質老化。"
-                    };
-                }
+            const goalText = computed(() => {
+                const goals = {
+                    fatLoss: { recommendation: `建議維持心跳在 ${calc(0.6)}-${calc(0.75)} bpm，此區間燃脂效率最高。` },
+                    cardio: { recommendation: `建議維持心跳在 ${calc(0.75)}-${calc(0.85)} bpm，增強心肺及耐力。` },
+                    performance: { recommendation: `挑戰 ${calc(0.85)} bpm 以上，提升爆發力與乳酸閾值。` }
+                };
+                return goals[selectedGoal.value];
+            });
+
+            const muscleData = computed(() => {
+                const a = parseInt(age.value);
+                if (a < 30) return { situation: "處於巅峰期，合成效率最高。", advice: "建立儲備，多做重訓。" };
+                if (a < 50) return { situation: "肌肉每10年流失3-8%，代謝下降。", advice: "必須加入阻力訓練及補充蛋白質。" };
+                return { situation: "流失加快，肌少症風險增加。", advice: "功能性阻力訓練，保護關節與骨質。" };
             });
 
             const copyReport = () => {
-                const reportText = `
-【體適能評估與心跳率分析報告】
-年齡：${age.value} 歲
-最大心跳率 (MHR)：${mhr.value} bpm
-
-⚠️ [身體組成評估注意]
-坊間常用 BMI 作為標準，但 BMI 無法區分肌肉與脂肪的重量。要準確評估健康同體態，測量「體脂肪率」及「骨骼肌重量」會更具指標性及正確。
-
-[數據總結]
-根據您的年齡，預估最大心跳率為 ${mhr.value} bpm。
-
-[訓練建議 - ${currentGoalData.value.title}]
-${currentGoalData.value.recommendation}
-
-[提升體能具體方案]
-${currentGoalData.value.improvement}
-
-💪 [肌肉流失情況及抗衰老建議]
-- 年齡階段分析：${muscleLossData.value.situation}
-- 專業建議：${muscleLossData.value.advice}
-                `.trim();
-
-                navigator.clipboard.writeText(reportText).then(() => {
-                    showToast.value = true;
-                    setTimeout(() => {
-                        showToast.value = false;
-                    }, 3000);
-                });
+                const text = `年齡：${age.value}歲\nBMI：${bmi.value} (${bmiStatus.value})\n最大心跳：${mhr.value} bpm\n目標：${selectedGoal.value}\n建議：${goalText.value.recommendation}\n*BMI僅供參考，體脂率測量更準確。`;
+                navigator.clipboard.writeText(text);
+                alert("報告已複製！");
             };
 
-            return {
-                age,
-                mhr,
-                calculateBPM,
-                selectedGoal,
-                currentGoalData,
-                muscleLossData,
-                copyReport,
-                showToast
-            }
+            return { age, height, weight, selectedGoal, mhr, calc, bmi, bmiStatus, goalText, muscleData, copyReport }
         }
     }).mount('#app');
 </script>
-
 </body>
 </html>
